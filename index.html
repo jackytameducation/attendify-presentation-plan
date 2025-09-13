@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendify: Presentation Plan & Roles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .task-item {
+            transition: all 0.3s ease-in-out;
+        }
+        .task-item.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
+        .person-tag {
+            background-color: #312e81; /* indigo-900 */
+            color: #c7d2fe; /* indigo-200 */
+            font-weight: 500;
+        }
+        .filter-btn.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200">
+
+    <!-- Password Protection Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div id="password-box" class="bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">Authorization Required</h2>
+            <p class="text-slate-400 mb-6">Please enter the password to view the presentation plan.</p>
+            <form id="password-form">
+                <input type="password" id="password-input" class="w-full bg-slate-700 text-white rounded-md p-3 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Password">
+                <p id="error-message" class="text-red-400 h-6 mt-2 text-sm"></p>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-md transition-all duration-200 mt-4">
+                    Unlock
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content" class="container mx-auto max-w-4xl p-4 sm:p-8 hidden">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">Attendify Presentation Plan</h1>
+            <p class="text-lg text-slate-400">Click on a name to filter the rundown and see specific tasks.</p>
+        </header>
+
+        <!-- Filter Controls -->
+        <div id="filter-controls" class="flex flex-wrap justify-center gap-2 mb-10">
+            <!-- Buttons are dynamically styled via JS -->
+        </div>
+
+        <!-- Rundown List -->
+        <div id="rundown" class="space-y-4">
+            
+            <!-- Step 1: Before Presentation -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky,Janice,Almen">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">1. Setup (Before Presentation)</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-300">
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Prepare laptop with PowerPoint and Attendify app open.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Janice</span> / <span class="person-tag rounded-full px-2 py-1">Almen</span>: Prepare 2 phones for the FaceTime attendance demonstration.</li>
+                </ul>
+            </div>
+
+            <!-- Step 2: Introduction -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">2. Introduction</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-300">
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Show Slide 1 to introduce "Attendify".</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Show Slide 2 to explain the SSO login process.</li>
+                </ul>
+            </div>
+            
+            <!-- Step 3: Live Demo Start -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky,Attendees,Anthony">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">3. Live Demonstration Kick-off</h3>
+                 <ul class="list-disc list-inside space-y-2 text-slate-300">
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Show Slide 3 to explain the attendance flow.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Open the Attendify app and start a new QR session for class GET-CPRS_2526.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Attendees</span>: Everyone scans the QR code.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Anthony</span>: Assist any attendees who have questions during the scan.</li>
+                </ul>
+            </div>
+
+            <!-- Step 4: Demo Scenarios -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Almen,Anthony,Jonathan,Jacky,Janice,Attendees">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">4. Demonstration Scenarios</h3>
+                <p class="mb-3 text-slate-400">Execute the following roles to demonstrate system features:</p>
+                <ul class="list-disc list-inside space-y-3 text-slate-300">
+                    <li><strong>Normal Student:</strong> <span class="person-tag rounded-full px-2 py-1">Almen</span>, <span class="person-tag rounded-full px-2 py-1">Anthony</span>, and <span class="person-tag rounded-full px-2 py-1">Jonathan</span> scan the QR code normally.</li>
+                    <li><strong>Suspicious Case (Video Scan):</strong> <span class="person-tag rounded-full px-2 py-1">Almen</span> sends a video of the QR code to <span class="person-tag rounded-full px-2 py-1">Jacky</span>.</li>
+                    <li><strong>Remote Attendance (FaceTime):</strong> <span class="person-tag rounded-full px-2 py-1">Almen</span> initiates a FaceTime call (mic muted) to <span class="person-tag rounded-full px-2 py-1">Janice</span> to scan the code remotely.</li>
+                    <li><strong>Guest Role:</strong> All other <span class="person-tag rounded-full px-2 py-1">Attendees</span> will be flagged as "Guests" in the system.</li>
+                </ul>
+            </div>
+
+            <!-- Step 5: Reporting & Wrap-up -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky,Janice">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">5. Reporting & Key Features</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-300">
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Display the attendance report.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Specifically point out the suspicious photo captured from <span class="person-tag rounded-full px-2 py-1">Janice</span>'s remote scan.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Briefly present the key features (versatility, SSO duration, scalability).</li>
+                </ul>
+            </div>
+
+            <!-- Step 6: Q&A -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky">
+                 <h3 class="font-bold text-xl text-indigo-400 mb-2">6. Q&A Session</h3>
+                 <p class="text-slate-300"><span class="person-tag rounded-full px-2 py-1">Jacky</span> (and team) will open the floor for questions.</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordModal = document.getElementById('password-modal');
+            const passwordForm = document.getElementById('password-form');
+            const passwordInput = document.getElementById('password-input');
+            const passwordBox = document.getElementById('password-box');
+            const errorMessage = document.getElementById('error-message');
+            const mainContent = document.getElementById('main-content');
+            
+            const CORRECT_PASSWORD = 'attendify';
+
+            passwordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (passwordInput.value === CORRECT_PASSWORD) {
+                    passwordModal.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                    initializeApp();
+                } else {
+                    errorMessage.textContent = 'Incorrect password. Please try again.';
+                    passwordBox.classList.add('shake');
+                    passwordInput.value = '';
+                    // Remove shake animation after it ends
+                    setTimeout(() => {
+                        passwordBox.classList.remove('shake');
+                    }, 500);
+                }
+            });
+
+            // Set focus to the password input field on load
+            passwordInput.focus();
+
+            function initializeApp() {
+                const filterControls = document.getElementById('filter-controls');
+                const tasks = document.querySelectorAll('.task-item');
+                
+                // --- Create Filter Buttons ---
+                const people = ['All', 'Jacky', 'Janice', 'Almen', 'Anthony', 'Jonathan', 'Attendees'];
+                people.forEach(person => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn px-4 py-2 rounded-md font-semibold transition-all duration-200 bg-slate-700 hover:bg-indigo-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500';
+                    button.dataset.person = person;
+                    button.textContent = person === 'All' ? 'All Steps' : person;
+                    filterControls.appendChild(button);
+                });
+                
+                const buttons = filterControls.querySelectorAll('.filter-btn');
+
+                // --- Filtering Logic ---
+                const filterTasks = (person) => {
+                    // Update button styles
+                    buttons.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.person === person);
+                    });
+
+                    // Filter task visibility
+                    tasks.forEach(task => {
+                        const persons = task.dataset.persons.split(',');
+                        const isVisible = (person === 'All' || persons.includes(person));
+                        task.classList.toggle('hidden', !isVisible);
+                    });
+                };
+
+                // Add click event listener to the control buttons
+                filterControls.addEventListener('click', (event) => {
+                    if (event.target.classList.contains('filter-btn')) {
+                        const person = event.target.dataset.person;
+                        filterTasks(person);
+                        // Update URL hash without jumping
+                        history.pushState(null, null, `#${person}`);
+                    }
+                });
+
+                // --- Anchor/Hash Logic ---
+                const applyHash = () => {
+                    const hash = window.location.hash.substring(1); // Remove #
+                    const personFromHash = hash.charAt(0).toUpperCase() + hash.slice(1);
+                    
+                    if (people.includes(personFromHash)) {
+                        filterTasks(personFromHash);
+                    } else {
+                        filterTasks('All'); // Default view
+                    }
+                };
+
+                // Apply hash on initial load
+                applyHash();
+
+                // Listen for hash changes (e.g., browser back/forward buttons)
+                window.addEventListener('hashchange', applyHash);
+            }
+        });
+    </script>
+</body>
+</html>
+
