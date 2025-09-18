@@ -133,6 +133,61 @@
                  <h3 class="font-bold text-xl text-indigo-400 mb-2">6. Q&A Session</h3>
                  <p class="text-slate-300"><span class="person-tag rounded-full px-2 py-1">Jonathan (Presenter)</span>: Lead the Q&A session, assisted by the rest of the team.</p>
             </div>
+
+            <!-- Step 7: Image Upload & Resize Demo -->
+            <div class="task-item bg-slate-800 p-5 rounded-lg shadow-md" data-persons="Jacky,Jonathan">
+                <h3 class="font-bold text-xl text-indigo-400 mb-2">7. Image Upload & Resize Demo</h3>
+                <p class="text-slate-300 mb-4">Demonstrate the photo processing feature for attendance verification:</p>
+                
+                <div class="bg-slate-700 p-4 rounded-lg">
+                    <div class="mb-4">
+                        <label for="imageUpload" class="block text-sm font-medium text-slate-300 mb-2">
+                            Upload Image for Processing:
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" 
+                               class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                    </div>
+                    
+                    <div id="resizeControls" class="mb-4 hidden">
+                        <div class="grid grid-cols-2 gap-4 mb-3">
+                            <div>
+                                <label for="resizeWidth" class="block text-xs text-slate-400 mb-1">Width (px)</label>
+                                <input type="number" id="resizeWidth" value="800" min="50" max="2000" 
+                                       class="w-full bg-slate-600 text-white rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="resizeHeight" class="block text-xs text-slate-400 mb-1">Height (px)</label>
+                                <input type="number" id="resizeHeight" value="600" min="50" max="2000" 
+                                       class="w-full bg-slate-600 text-white rounded px-3 py-2 text-sm">
+                            </div>
+                        </div>
+                        <button id="resizeBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Resize Image
+                        </button>
+                    </div>
+                    
+                    <div id="imagePreview" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-300 mb-2">Original Image:</h4>
+                            <canvas id="originalCanvas" class="border border-slate-600 rounded max-w-full"></canvas>
+                            <p id="originalInfo" class="text-xs text-slate-400 mt-1"></p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-slate-300 mb-2">Resized Image:</h4>
+                            <canvas id="resizedCanvas" class="border border-slate-600 rounded max-w-full"></canvas>
+                            <p id="resizedInfo" class="text-xs text-slate-400 mt-1"></p>
+                            <button id="downloadBtn" class="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm hidden">
+                                Download Resized Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <ul class="list-disc list-inside space-y-2 text-slate-300 mt-4">
+                    <li><span class="person-tag rounded-full px-2 py-1">Jacky</span>: Upload a student photo and demonstrate the resizing feature.</li>
+                    <li><span class="person-tag rounded-full px-2 py-1">Jonathan</span>: Explain how the system maintains original filenames when processing images for attendance verification.</li>
+                </ul>
+            </div>
             
         </div>
     </div>
@@ -226,6 +281,130 @@
 
                 // Listen for hash changes (e.g., browser back/forward buttons)
                 window.addEventListener('hashchange', applyHash);
+
+                // Initialize image upload functionality
+                initializeImageUpload();
+            }
+
+            // Image Upload and Resize Functionality
+            function initializeImageUpload() {
+                const imageUpload = document.getElementById('imageUpload');
+                const resizeControls = document.getElementById('resizeControls');
+                const imagePreview = document.getElementById('imagePreview');
+                const originalCanvas = document.getElementById('originalCanvas');
+                const resizedCanvas = document.getElementById('resizedCanvas');
+                const originalInfo = document.getElementById('originalInfo');
+                const resizedInfo = document.getElementById('resizedInfo');
+                const resizeBtn = document.getElementById('resizeBtn');
+                const downloadBtn = document.getElementById('downloadBtn');
+                const widthInput = document.getElementById('resizeWidth');
+                const heightInput = document.getElementById('resizeHeight');
+                
+                let currentFile = null;
+                let originalImage = null;
+                
+                imageUpload.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        currentFile = file;
+                        loadImage(file);
+                    }
+                });
+                
+                function loadImage(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            originalImage = img;
+                            displayOriginalImage(img, file);
+                            resizeControls.classList.remove('hidden');
+                            imagePreview.classList.remove('hidden');
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                function displayOriginalImage(img, file) {
+                    const ctx = originalCanvas.getContext('2d');
+                    
+                    // Set canvas display size (max 300px width for preview)
+                    const maxDisplayWidth = 300;
+                    const scale = Math.min(maxDisplayWidth / img.width, maxDisplayWidth / img.height);
+                    const displayWidth = img.width * scale;
+                    const displayHeight = img.height * scale;
+                    
+                    originalCanvas.width = displayWidth;
+                    originalCanvas.height = displayHeight;
+                    
+                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                    
+                    // Show file info with original filename
+                    const fileName = file.name;
+                    const fileSize = (file.size / 1024).toFixed(1);
+                    originalInfo.textContent = `File: ${fileName} | Size: ${fileSize}KB | Dimensions: ${img.width}×${img.height}px`;
+                }
+                
+                resizeBtn.addEventListener('click', () => {
+                    if (!originalImage) return;
+                    
+                    const newWidth = parseInt(widthInput.value);
+                    const newHeight = parseInt(heightInput.value);
+                    
+                    if (newWidth > 0 && newHeight > 0) {
+                        resizeImage(originalImage, newWidth, newHeight);
+                    }
+                });
+                
+                function resizeImage(img, newWidth, newHeight) {
+                    const ctx = resizedCanvas.getContext('2d');
+                    
+                    // Set actual canvas size
+                    resizedCanvas.width = newWidth;
+                    resizedCanvas.height = newHeight;
+                    
+                    // Draw resized image
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                    
+                    // Set display size for preview (max 300px)
+                    const maxDisplayWidth = 300;
+                    const scale = Math.min(maxDisplayWidth / newWidth, maxDisplayWidth / newHeight);
+                    const displayWidth = newWidth * scale;
+                    const displayHeight = newHeight * scale;
+                    
+                    resizedCanvas.style.width = displayWidth + 'px';
+                    resizedCanvas.style.height = displayHeight + 'px';
+                    
+                    // Generate new filename preserving original name
+                    const originalName = currentFile.name;
+                    const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'));
+                    const extension = originalName.substring(originalName.lastIndexOf('.'));
+                    const newFileName = `${nameWithoutExt}_resized_${newWidth}x${newHeight}${extension}`;
+                    
+                    // Show resized info with preserved filename format
+                    const canvas = resizedCanvas;
+                    canvas.toBlob((blob) => {
+                        const newSize = (blob.size / 1024).toFixed(1);
+                        resizedInfo.textContent = `File: ${newFileName} | Size: ${newSize}KB | Dimensions: ${newWidth}×${newHeight}px`;
+                    }, currentFile.type, 0.9);
+                    
+                    downloadBtn.classList.remove('hidden');
+                    downloadBtn.onclick = () => downloadResizedImage(newFileName);
+                }
+                
+                function downloadResizedImage(fileName) {
+                    resizedCanvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName; // This preserves the original filename with resize suffix
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, currentFile.type, 0.9);
+                }
             }
         });
     </script>
